@@ -3,40 +3,26 @@
 import SwiftUI
 
 struct ContentView: View {
-    // MARK: Internal
 
-    let urlString = "https://official-joke-api.appspot.com/random_joke"
-
-    @State private var responseText = "Hello, world!"
+    @StateObject var viewModel = ViewModel()
 
     var body: some View {
         VStack(spacing: 18) {
-            Image(systemName: "globe")
-                .imageScale(.large)
-                .foregroundStyle(.tint)
-            
-            Text(responseText)
-                .lineLimit(10)
-            
+            if let joke = viewModel.joke {
+                Text(joke.setup)
+                    .font(.headline)
+                    .foregroundColor(.purple)
+                Text(joke.punchline)
+                    .font(.headline)
+            } else {
+                Text("Press the button for the next Joke")
+            }
             Button("tell me a joke") {
-                guard let url = URL(string: urlString) else {
-                    responseText = "Somethoing went wrong"
-                    return
-                }
-                guard let data = try? Data(contentsOf: url) else {
-                    responseText = "Somethoing went wrong"
-                    return
-                }
-                guard let resultString = String(data: data, encoding: .utf8) else {
-                    responseText = "Somethoing went wrong"
-                    return
-                }
-                responseText = resultString
+                viewModel.fetchData()
             }
         }
-        
+        .padding()
     }
-
 }
 
 #Preview {
